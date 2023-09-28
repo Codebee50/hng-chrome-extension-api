@@ -7,5 +7,6 @@ class VideoSerialier(serializers.ModelSerializer):
         model = Video
         fields = [
             'video_title',
+            'created_at',
             'id',
         ]

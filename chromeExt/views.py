@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from .serializers import VideoSerialier
 from .models import Video
@@ -13,10 +13,14 @@ class UploadVideo(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        
+
         if serializer.is_valid():
+            serializer.save()
             return Response({
-                'message': serializer.data
+                'message': 'Video created succesfully',
+                'data': serializer.data
             })
         else:
-            return Response({'message': 'serializer is not valid'})
+            return Response({'message': 'Data is not valid'}, status=status.HTTP_400_BAD_REQUEST)
+        
+  
