@@ -23,4 +23,12 @@ class UploadVideo(generics.GenericAPIView):
         else:
             return Response({'message': 'Data is not valid'}, status=status.HTTP_400_BAD_REQUEST)
         
-  
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+        
+class VideoDetail(generics.RetrieveAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerialier
+    lookup_field = 'pk'
