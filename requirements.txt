@@ -4,3 +4,4 @@ pyyaml
 requests
 SpeechRecognition
 pydub
+django-cors-headers
