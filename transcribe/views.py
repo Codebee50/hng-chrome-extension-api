@@ -6,6 +6,8 @@ import threading
 from chromeExt.models import Video
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
+from django.conf import settings
+
 
 
 
@@ -39,8 +41,10 @@ def transcribe(videoFile, deferred, modelId):
     video = AudioSegment.from_file(videoFile, format=file_extension)
     audio = video.set_channels(1).set_frame_rate(16000).set_sample_width(2)
 
+
     audio_file_name = f"audio-{video_name}"
-    audio_file_path = f"audio/{audio_file_name}"
+
+    audio_file_path = os.path.join(settings.BASE_DIR, f"audio/{audio_file_name}")
 
     audio.export(audio_file_path, format="wav")#creating an audio file from the video file in wav format for transcribing
 
@@ -49,7 +53,7 @@ def transcribe(videoFile, deferred, modelId):
         audio_text = r.record(source=source)
     
     text = r.recognize_google(audio_text, language='en-US')
-    os.remove(audio_file_path)
+    # os.remove(audio_file_path)
 
     if deferred: #this means the task of transcribing was left for later, we need to update the model
         try:
