@@ -30,16 +30,18 @@ class UploadVideo(generics.GenericAPIView):
 
             new_file_name = f'{new_uuid}.{file_extension}'
 
+            video_file.name = new_file_name#changing the name of the original video file
 
             if deferred == 'true':
                 serializer.save()
-                video_file_path = settings.MEDIA_ROOT + 'media/videos/' + new_file_name
-                
-                TranscriptionThread(videoFile= video_file_path, modelId=serializer.validated_data.get('id')).start()
-            else:
-                video_file.name = new_file_name#changing the name of the original video file
+                video_path = 'media/videos/' + new_file_name
 
-                transcript = transcribe(videoFile=video_file, deferred=False, modelId=None)
+                video_file_path = os.path.join(settings.BASE_DIR, video_path)
+                
+                TranscriptionThread(videoFile= None, modelId=serializer.data.get('id'), video_file_path=video_file_path, video_name=new_file_name).start()
+            else:
+
+                transcript = transcribe(videoFile=video_file, deferred=False, modelId=None, video_file_path=None, video_name=new_file_name)
                 serializer.save(transcript=transcript)
 
 
