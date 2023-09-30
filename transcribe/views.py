@@ -53,7 +53,7 @@ def transcribe(videoFile, deferred, modelId):
         audio_text = r.record(source=source)
     
     text = r.recognize_google(audio_text, language='en-US')
-    # os.remove(audio_file_path)
+    os.remove(audio_file_path)
 
     if deferred: #this means the task of transcribing was left for later, we need to update the model
         try:
