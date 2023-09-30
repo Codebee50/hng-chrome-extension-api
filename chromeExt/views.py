@@ -8,6 +8,8 @@ import uuid
 from transcribe.views import transcribe, TranscriptionThread
 from django.core.files import File
 from django.conf import settings
+from rest_framework.decorators import api_view
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # Create your views here.
@@ -50,7 +52,10 @@ class UploadVideo(generics.GenericAPIView):
                 'data': serializer.data
             }, status=status.HTTP_201_CREATED)
         else:
-            return Response({'message': 'Data is not valid'}, status=status.HTTP_400_BAD_REQUEST)
+            print('the type is ', type(serializer.errors))
+            error_message = next(iter(serializer.errors.values()))[0]
+
+            return Response({'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
         
     
     def get(self, request, *args, **kwargs):
@@ -62,3 +67,27 @@ class VideoDetail(generics.RetrieveAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerialier
     lookup_field = 'pk'
+
+
+class generateVideoTranscript(generics.RetrieveAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerialier
+    lookup_field= 'pk'
+    
+ 
+    def get(self, request, *args, **kwargs):
+        modelId = kwargs.get('pk')
+        try:
+            video_model = Video.objects.get(id=modelId)
+        except ObjectDoesNotExist:
+            return Response({'message': f'A video with an id {modelId} does not exist'}, status= status.HTTP_400_BAD_REQUEST)
+
+        if video_model.transcript == 'pending':#we only want to generate a transcript if the transcript has not been generated before 
+            video_path = 'media/' + video_model.video_file.name
+
+            video_file_path = os.path.join(settings.BASE_DIR, video_path)
+            video_name = video_model.video_file.name
+            parts = video_name.split('/')
+            transcribe(videoFile=video_model.video_file, deferred=True, modelId=modelId, video_file_path=video_file_path, video_name=parts[-1])
+
+        return super().get(request, *args, **kwargs)

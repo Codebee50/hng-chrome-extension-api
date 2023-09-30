@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from .models import Video
 from datetime import datetime
+from .validators import validate_unique_video_title
 
 class VideoSerialier(serializers.ModelSerializer):
     time_created = serializers.SerializerMethodField(read_only=True)
     date_created = serializers.SerializerMethodField(read_only=True)
+    video_title = serializers.CharField(validators =[validate_unique_video_title])
     class Meta:
         model = Video
         fields = [
