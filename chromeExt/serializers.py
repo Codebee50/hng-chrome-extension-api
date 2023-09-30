@@ -13,6 +13,7 @@ class VideoSerialier(serializers.ModelSerializer):
             'date_created',
             'time_created',
             'video_file',
+            'transcript',
             'id',
         ]
 
