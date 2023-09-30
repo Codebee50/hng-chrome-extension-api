@@ -2,7 +2,7 @@
 ## Chrome extension api documentation
 
 ## Getting started 
-online api domain => http://codebee.pythonanywhere.com
+online api domain => https://codebee.pythonanywhere.com
 
 # POST -> Create a new video
 ``````
@@ -27,8 +27,9 @@ the `defered` attribute specifies if transcript should be generated while creati
     "message": "A video with the title (A sample title changed) already exists"
 }
 
-and a status code of `400` if video title already exists
 ```
+with a status code of `400` if video title already exists
+
 
 ```json
 {
@@ -44,8 +45,8 @@ and a status code of `400` if video title already exists
     }
 }
 
-and a status code of 201 if deferred was set to true and video was created succesfully
 ```
+with a status code of 201 if deferred was set to true and video was created succesfully
 
 ```json
 
@@ -61,14 +62,13 @@ and a status code of 201 if deferred was set to true and video was created succe
         "id": 94
     }
 }
-
-with a status code of 201 if deferred was set to false and video was created succesfully
 ```
+with a status code of 201 if deferred was set to false and video was created succesfully
 
 # GET -> Get a video
 
 ```
-codebee.pythonanywhere.com/api/video/:id/
+https://codebee.pythonanywhere.com/api/video/:id/
 ```
 ### Path variables
 * id -> the id of the video to be retrieved
@@ -126,8 +126,9 @@ This endpoint is used to get the transcription of videos whose transcript were p
     "id": 4
 }
 
-with a status of 200 
 ```
+with a status of 200 
+
 
 
 
