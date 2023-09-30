@@ -5,6 +5,8 @@ import os
 import threading
 from chromeExt.models import Video
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
+
 
 
 class TranscriptionThread(threading.Thread):
@@ -27,7 +29,9 @@ def transcribe(videoFile, deferred, modelId):
         :videoFile: the video file to be transcribed
         :deffered: indicates if the transcription should be done now or if it was deffered for later
     """
-
+    if deferred:
+        videoFile = File(open(videoFile))
+        
     video_name = videoFile.name
     parts = video_name.split('.')#spliting the name of the document into parts base on the '.' symbol
     file_extension = parts[-1]#getting the last item in the list will will be the file extension 

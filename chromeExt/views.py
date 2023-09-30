@@ -7,6 +7,7 @@ import os
 import uuid
 from transcribe.views import transcribe, TranscriptionThread
 from django.core.files import File
+from django.conf import settings
 
 
 # Create your views here.
@@ -31,10 +32,10 @@ class UploadVideo(generics.GenericAPIView):
 
 
             if deferred == 'true':
-                video_ref = File(video_file, name=new_file_name)
-                video_ref.open()
                 serializer.save()
-                TranscriptionThread(videoFile= video_ref, modelId=serializer.validated_data.get('id')).start()
+                video_file_path = settings.MEDIA_ROOT + 'media/videos/' + new_file_name
+                
+                TranscriptionThread(videoFile= video_file_path, modelId=serializer.validated_data.get('id')).start()
             else:
                 video_file.name = new_file_name#changing the name of the original video file
 
