@@ -46,7 +46,7 @@ with a status code of `400` if video title already exists
 }
 
 ```
-with a status code of 201 if deferred was set to true and video was created succesfully
+with a status code of `201` if `deferred` was set to `true` and video was created succesfully
 
 ```json
 
@@ -63,7 +63,7 @@ with a status code of 201 if deferred was set to true and video was created succ
     }
 }
 ```
-with a status code of 201 if deferred was set to false and video was created succesfully
+with a status code of `201` if `deferred` was set to `false` and video was created succesfully
 
 # GET -> Get a video
 
