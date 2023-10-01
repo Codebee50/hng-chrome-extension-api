@@ -62,8 +62,7 @@ class UploadVideo(generics.GenericAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
         
-
-
+        
 class VideoDetail(generics.RetrieveAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerialier
@@ -140,12 +139,13 @@ def uploadSessionChunk(request, *args, **kwargs):
 @api_view(['POST'])
 def completeSession(request, *args, **kwargs):
     session_id = kwargs.get('session_id')
-    video_title = request.query_params.get('video_title')
+    video_title = request.data.get('video_title')
+    deferred = request.data.get('deferred')
 
     try:
         video_session = VideoSession.objects.get(session_id=session_id)
     except ObjectDoesNotExist:
-        return Response({'message': 'session not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'Video session not found'}, status=status.HTTP_404_NOT_FOUND)
 
     binary_data = video_session.chunks
 
@@ -154,13 +154,13 @@ def completeSession(request, *args, **kwargs):
 
     domain = get_current_site(request)
     upload_video_endpoint = f'http://{domain}/api/video/'
+
     request_body = {
         'video_title': video_title,
-        'deferred': 'true'
+        'deferred': deferred
     }
     files = {'video_file': ('video.webm', file_object)} #uplaoding the file with a temporary name of video.webm, this will be changed later 
 
-    
     response = requests.post(upload_video_endpoint, data=request_body, files=files)#making a request to upload the file 
 
     if response.status_code == status.HTTP_201_CREATED:
@@ -169,7 +169,5 @@ def completeSession(request, *args, **kwargs):
     return Response(response.json())
 
    
-
-
 
     
