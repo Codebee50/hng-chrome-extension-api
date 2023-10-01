@@ -72,6 +72,17 @@ with a status code of 201 if video was created succesfully
 ```
 with as status code of 400 if an error occurs 
 
+# POST -> Cancel a video session
+This deletes a video session with the specified id along with all the chunks that has been uploaded previously for that session
+
+```
+https://codebee.pythonanywhere.com/api/cancel-session/:session_id/
+```
+
+### Returns
+`{'message': 'Video session not found'}` with a status code of 404 if video session was not found
+
+`{'message', 'Session cancelled succesfully'}` with a status of 200 if video session was deleted succesfully
 
 
 

@@ -241,6 +241,6 @@ def cancelVideoSession(request, *args, **kwargs):
         return Response({'message': 'Video session not found'}, status=status.HTTP_404_NOT_FOUND)
     
     video_session.delete()
-    return Response('message', 'Session cancelled succesfully', status= status.HTTP_200_OK)
+    return Response({'message': 'Session cancelled succesfully'}, status= status.HTTP_200_OK)
 
     

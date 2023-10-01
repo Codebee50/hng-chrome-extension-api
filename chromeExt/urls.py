@@ -8,6 +8,6 @@ urlpatterns =[
     path('start-session/', views.startVideoSession, name='startvideosession'),
     path('upload-chunk/<str:session_id>/', views.uploadSessionChunk, name='uploadsessionchunk'),
     path('complete-session/<str:session_id>/', views.completeVideoSession.as_view(), name='completesession'),
-    path('cancel-session/<str:session_id/', views.cancelVideoSession, name='cancelvideosession'),
+    path('cancel-session/<str:session_id>/', views.cancelVideoSession, name='cancelvideosession'),
     path('upload-chunk-array/<str:session_id>/', views.uploadSessionChunkArray, name='uploadchunkarray')
 ]
