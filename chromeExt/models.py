@@ -7,3 +7,7 @@ class Video(models.Model):
     video_file = models.FileField(upload_to='videos/')
     created_at = models.DateTimeField(auto_now=True)
     transcript = models.TextField(default='pending')
+
+class VideoSession(models.Model):
+    session_id = models.UUIDField(null=False)
+    chunks = models.BinaryField(null=False, default=b'')

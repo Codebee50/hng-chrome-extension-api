@@ -4,3 +4,4 @@ videos/
 *.mp4
 audio-*
 *.sqlite3
+temps/

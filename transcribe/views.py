@@ -54,9 +54,9 @@ def transcribe(videoFile, deferred, modelId, video_file_path, video_name):
     audio = video.set_channels(1).set_frame_rate(16000).set_sample_width(2)
 
 
-    audio_file_name = f"audio-{video_name}"
+    audio_file_name = f"temp-audio-{video_name}"
 
-    audio_file_path = os.path.join(settings.BASE_DIR, f"audio/{audio_file_name}")
+    audio_file_path = os.path.join(settings.BASE_DIR, f"temps/{audio_file_name}")
     print('the audio file path is ', audio_file_path)
     audio.export(audio_file_path, format="wav")#creating an audio file from the video file in wav format for transcribing
 
