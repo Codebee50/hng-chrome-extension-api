@@ -4,6 +4,76 @@
 ## Getting started 
 online api domain => https://codebee.pythonanywhere.com
 
+# POST -> Start a new session
+This creates a new video session and returns the session_id, which can be used to upload video chunks to that session 
+```
+http://codebee.pythonanywhere.com/api/start-session/
+```
+### Returns
+`{
+        'message': 'Session started succesfully',
+        'session_id': 87a9bb00-e605-4f61-988d-717c92832a51
+    }`
+    and a status code of 201 if session was started succesfully
+
+# POST -> Upload a chunk 
+This appends a video chunk to the session specified by the session_id
+
+
+```
+http://codebee.pythonanywhere.com/api/upload-chunk/:session_id/
+```
+
+### Body
+```json
+{
+    "video_chunk": "<chunk>"
+}
+```
+
+# POST -> Complete session
+This endpoint assumes that recordinig is complete, concatenates all the chunks in the session and saves as a video file. The deferred variable in the reqeust body indicates that trancription shouldnt be done now but left for later, as transcription might cause long waiting periods
+
+```
+https://codebee.pythonanywhere.com/api/complete-session/:session_id/
+```
+
+### Body
+```json
+{
+    "video_title" : "<A title for the recording>",
+    "deferred" : "true"
+}
+
+```
+
+### Returns
+```json
+{
+    "message": "Video created succesfully",
+    "data": {
+        "video_title": "A test for online",
+        "created_at": "2023-10-01T16:11:05.102558Z",
+        "date_created": "2023-10-01",
+        "time_created": "16:11:05",
+        "video_file": "https://codebee.pythonanywhere.com/media/videos/76603429-282f-40d2-9832-3c32ecc4d2be.webm",
+        "transcript": "pending",
+        "id": 8
+    }
+}
+```
+with a status code of 201 if video was created succesfully
+
+```json
+{
+    "message": "<Appropriate error message>"
+}
+```
+with as status code of 400 if an error occurs 
+
+
+
+
 # POST -> Create a new video
 ``````
 https://codebee.pythonanywhere.com/api/video/

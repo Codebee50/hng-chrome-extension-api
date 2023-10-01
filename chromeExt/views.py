@@ -13,6 +13,9 @@ from django.core.exceptions import ObjectDoesNotExist
 import requests
 from django.contrib.sites.shortcuts import get_current_site
 import io
+import base64
+from django.core.files.base import ContentFile
+
 
 
 # Create your views here.
@@ -101,11 +104,10 @@ def startVideoSession(reqeust,*args, **kwargs):
     return Response({
         'message': 'Session started succesfully',
         'session_id': session_uuid
-    })
+    }, status= status.HTTP_201_CREATED)
 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
 def uploadSessionChunk(request, *args, **kwargs):
-    print('started upload chunk..')
     session_id = kwargs.get('session_id')
     try:
         video_session = VideoSession.objects.get(session_id = session_id)
@@ -115,6 +117,7 @@ def uploadSessionChunk(request, *args, **kwargs):
 
     if video_session is not None:
         video_chunk = request.FILES.get('video_chunk')
+        print(type(video_chunk))
 
         binary_data = bytes(video_chunk.read())
         
@@ -129,11 +132,43 @@ def uploadSessionChunk(request, *args, **kwargs):
 
         return Response({
             'message': 'chunk added succesfully'
-        })
+        }, status= status.HTTP_201_CREATED)
     else:
         return Response({
             'message': 'invalid session id'
-        })
+        }, status= status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def uploadSessionChunkArray(request, *args, **kwargs):
+    session_id = kwargs.get('session_id')
+    # received_data = request.POST.getlist('blobs[]')
+
+    try:
+        video_session = VideoSession.objects.get(session_id = session_id)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Video session not found'})
+
+    chunk_array = request.data.get('chunk_array')
+    for blob_chunk in chunk_array:
+        print(type(blob_chunk))
+        video_chunk = ContentFile(base64.b64decode(blob_chunk))
+
+        print(type(video_chunk))
+        binary_data = bytes(video_chunk.read())
+        
+        if video_session.chunks is not None:
+            video_chunk_list = [video_session.chunks, binary_data]
+            video_buffer = b''.join(chunk for chunk in video_chunk_list)
+            video_session.chunks = video_buffer
+        else:
+            video_session.chunks = binary_data
+
+        video_session.save()
+
+    return Response({
+        'message': 'Chunk array uploaded succesfully'
+    }, status= status.HTTP_201_CREATED)
 
 
 
