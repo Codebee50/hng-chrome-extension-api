@@ -64,8 +64,20 @@ class UploadVideo(generics.GenericAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({'message': 'Video deleted successfully'})
         
-        
+class DestroyVideo(generics.DestroyAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerialier
+    lookup_field = 'pk'
+
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+    
 class VideoDetail(generics.RetrieveAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerialier
@@ -244,3 +256,4 @@ def cancelVideoSession(request, *args, **kwargs):
     return Response({'message': 'Session cancelled succesfully'}, status= status.HTTP_200_OK)
 
     
+

@@ -211,6 +211,21 @@ This endpoint is used to get the transcription of videos whose transcript were p
 ```
 with a status of 200 
 
+# DELETE -> Delete a video
+
+```
+https://codebee.pythonanywhere.com/api/delete-video/:id/
+```
+
+### Path variables
+* id -> the id of the video to be deleted
+
+### Returns 
+empty return body with a status code of `204` if video was deleted succesfully
+
+`{
+    "detail": "Not found."
+}` with a staus code of  `404` if video with :id was not found
 
 
 
