@@ -221,7 +221,7 @@ class completeVideoSession(generics.GenericAPIView):
                 transcript = transcribe(videoFile=video_file, deferred=False, modelId=None, video_file_path=None, video_name=new_file_name)
                 serializer.save(transcript=transcript)
 
-
+            video_session.delete()
             return Response({
                 'message': 'Video created succesfully',
                 'data': serializer.data
