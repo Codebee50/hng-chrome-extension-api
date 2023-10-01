@@ -136,38 +136,76 @@ def uploadSessionChunk(request, *args, **kwargs):
         })
 
 
-@api_view(['POST'])
-def completeSession(request, *args, **kwargs):
-    session_id = kwargs.get('session_id')
-    video_title = request.data.get('video_title')
-    deferred = request.data.get('deferred')
 
+class completeVideoSession(generics.GenericAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerialier
+    lookup_field = 'pk'
+
+    def post(self, request, *args, **kwargs):
+        session_id = kwargs.get('session_id')
+        deferred = request.data.get('deferred')
+
+        try:
+            video_session = VideoSession.objects.get(session_id=session_id)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Video session not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        binary_data = video_session.chunks
+
+        
+        file_object = io.BytesIO(binary_data)#creating a file object out of the binary data in the video session chunks
+        file = File(file_object)
+        file.name = 'recorded.webm'
+        data = {
+            'video_title': request.data.get('video_title'),
+            'deferred': request.data.get('deferred'),
+            'video_file': file,
+        }
+        serializer = self.get_serializer(data=data)
+
+        if serializer.is_valid():
+            video_file = serializer.validated_data.get('video_file')
+            new_uuid = str(uuid.uuid4())#generating a uuid to be used as the video name 
+
+            video_name = video_file.name
+            file_extension = video_name.split('.')[-1]#getting the file extension of the video
+
+            new_file_name = f'{new_uuid}.{file_extension}'
+
+            video_file.name = new_file_name#changing the name of the original video file
+
+            if deferred == 'true':
+                serializer.save()
+                video_path = 'media/videos/' + new_file_name
+
+                video_file_path = os.path.join(settings.BASE_DIR, video_path)
+                TranscriptionThread(videoFile= None, modelId=serializer.data.get('id'), video_file_path=video_file_path, video_name=new_file_name).start()
+            else:
+
+                transcript = transcribe(videoFile=video_file, deferred=False, modelId=None, video_file_path=None, video_name=new_file_name)
+                serializer.save(transcript=transcript)
+
+
+            return Response({
+                'message': 'Video created succesfully',
+                'data': serializer.data
+            }, status=status.HTTP_201_CREATED)
+        else:
+            error_message = next(iter(serializer.errors.values()))[0]
+            return Response({'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+   
+@api_view(['POST'])
+def cancelVideoSession(request, *args, **kwargs):
+    session_id = kwargs.get('session_id')
+    
     try:
         video_session = VideoSession.objects.get(session_id=session_id)
     except ObjectDoesNotExist:
         return Response({'message': 'Video session not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    binary_data = video_session.chunks
-
     
-    file_object = io.BytesIO(binary_data)#creating a file object out of the binary data in the video session chunks
-
-    domain = get_current_site(request)
-    upload_video_endpoint = f'http://{domain}/api/video/'
-
-    request_body = {
-        'video_title': video_title,
-        'deferred': deferred
-    }
-    files = {'video_file': ('video.webm', file_object)} #uplaoding the file with a temporary name of video.webm, this will be changed later 
-
-    response = requests.post(upload_video_endpoint, data=request_body, files=files)#making a request to upload the file 
-
-    if response.status_code == status.HTTP_201_CREATED:
-        video_session.delete()
-
-    return Response(response.json())
-
-   
+    video_session.delete()
+    return Response('message', 'Session cancelled succesfully', status= status.HTTP_200_OK)
 
     

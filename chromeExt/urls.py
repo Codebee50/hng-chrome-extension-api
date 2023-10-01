@@ -7,5 +7,6 @@ urlpatterns =[
     path('transcribe-video/<str:pk>/', views.generateVideoTranscript.as_view(), name='generate-transcription'),
     path('start-session/', views.startVideoSession, name='startvideosession'),
     path('upload-chunk/<str:session_id>/', views.uploadSessionChunk, name='uploadsessionchunk'),
-    path('complete-session/<str:session_id>/', views.completeSession, name='completesession')
+    path('complete-session/<str:session_id>/', views.completeVideoSession.as_view(), name='completesession'),
+    path('cancel-session/<str:session_id/', views.cancelVideoSession, name='cancelvideosession')
 ]
