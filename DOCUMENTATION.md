@@ -30,6 +30,7 @@ http://codebee.pythonanywhere.com/api/upload-chunk/:session_id/
     "video_chunk": "<chunk>"
 }
 ```
+chunk should be in blob format
 
 # POST -> Complete session
 This endpoint assumes that recordinig is complete, concatenates all the chunks in the session and saves as a video file. The deferred variable in the reqeust body indicates that trancription shouldnt be done now but left for later, as transcription might cause long waiting periods
